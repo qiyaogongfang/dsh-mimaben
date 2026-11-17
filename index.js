@@ -108,7 +108,20 @@ function sendJson(res, status, body) {
 const text = (value) => [{ type: 'text', text: value }]
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra })
 
-const KIND_LABEL = { account: '账号', api: 'API', key: '密钥', doc: '文档', other: '其他' }
+const KIND_LABEL = { account: '账号 / Account', api: 'API', key: '密钥 / Key', doc: '文档 / Doc', other: '其他 / Other' }
+
+// 修改记录里存的是字段中文名（历史数据也是），渲染时补上英文。
+const FIELD_LABEL = {
+  标题: '标题 / title',
+  类型: '类型 / kind',
+  账号: '账号 / account',
+  密钥: '密钥 / secret',
+  链接: '链接 / link',
+  正文: '正文 / body',
+  标签: '标签 / tags',
+}
+const fieldLabel = (name) => FIELD_LABEL[name] || name
+const SOURCE_LABEL = { tool: '对话 / chat', ui: '页面 / panel' }
 
 function formatTime(iso) {
   if (!iso) return ''
@@ -120,19 +133,23 @@ function formatTime(iso) {
 
 function entryText(entry, { revealed = false } = {}) {
   const lines = [`${entry.title}（${KIND_LABEL[entry.kind] || entry.kind}）`, `id：${entry.id}`]
-  if (entry.account) lines.push(`账号：${entry.account}`)
+  if (entry.account) lines.push(`账号 / Account：${entry.account}`)
   if (entry.has_secret) {
-    lines.push(revealed ? `密钥：${entry.secret}` : `密钥：已隐藏（${entry.secret_length} 位；要原值就用 reveal=true 再取一次）`)
+    lines.push(
+      revealed
+        ? `密钥 / Secret：${entry.secret}`
+        : `密钥 / Secret：已隐藏（${entry.secret_length} 位；要原值就再取一次并传 reveal=true）/ hidden (${entry.secret_length} chars; pass reveal=true for the value)`,
+    )
   }
-  if (entry.url) lines.push(`链接：${entry.url}`)
-  if (entry.tags && entry.tags.length) lines.push(`标签：${entry.tags.join('、')}`)
+  if (entry.url) lines.push(`链接 / Link：${entry.url}`)
+  if (entry.tags && entry.tags.length) lines.push(`标签 / Tags：${entry.tags.join('、')}`)
   if (entry.body) lines.push('', entry.body)
-  lines.push('', `更新：${formatTime(entry.updated_at)}`)
+  lines.push('', `更新 / Updated：${formatTime(entry.updated_at)}`)
   const history = (entry.history || []).slice(-3).reverse()
   if (history.length) {
-    lines.push('修改记录：')
+    lines.push('修改记录 / History：')
     for (const item of history) {
-      lines.push(`- ${formatTime(item.at)} 改了 ${item.fields.join('、')}（${item.source === 'tool' ? '对话' : '页面'}）`)
+      lines.push(`- ${formatTime(item.at)} · ${item.fields.map(fieldLabel).join('、')} · ${SOURCE_LABEL[item.source] || item.source}`)
     }
   }
   return lines.join('\n')
@@ -249,7 +266,10 @@ function buildTools(store) {
           },
         },
         render: (_args, value) =>
-          text(`已保存：${value.title}（${KIND_LABEL[value.kind] || value.kind}，id ${value.id}）${value.created ? '' : '，已更新原条目'}。密钥已加密落盘，不会回显。`),
+          text(
+            `已保存 / Saved：${value.title}（${KIND_LABEL[value.kind] || value.kind}，id ${value.id}）` +
+              `${value.created ? '' : ' · 已更新原条目 / updated'} · 密钥已加密落盘，不会回显 / secret encrypted at rest, never echoed`,
+          ),
       },
       async execute(rawArgs) {
         const args = checkArgs(rawArgs, SAVE_PARAMS)
@@ -287,7 +307,10 @@ function buildTools(store) {
           },
         },
         render: (_args, value) =>
-          text(`已修改：${value.title}（${value.changed.length ? '改了 ' + value.changed.join('、') : '内容和原来一样'}）。`),
+          text(
+            `已修改 / Updated：${value.title} · ` +
+              `${value.changed.length ? '改了 / changed：' + value.changed.join('、') : '内容与原来一致 / no change'}`,
+          ),
       },
       async execute(rawArgs) {
         const args = checkArgs(rawArgs, UPDATE_PARAMS)
@@ -299,7 +322,7 @@ function buildTools(store) {
         if (!Object.keys(patch).length) throw new Error('没有要改的字段：给 title/account/secret/url/body/tags 之一，或用 clear 清空。')
         const entry = await dispatch(store, 'update', { id: args.id, patch, source: 'tool' })
         const last = (entry.history || []).slice(-1)[0]
-        return { id: entry.id, title: entry.title, changed: last ? last.fields : [] }
+        return { id: entry.id, title: entry.title, changed: last ? last.fields.map(fieldLabel) : [] }
       },
     },
     {
@@ -323,16 +346,25 @@ function buildTools(store) {
         const args = checkArgs(rawArgs, LIST_PARAMS)
         const { items, total } = await dispatch(store, 'list', { query: args.query, kind: args.kind })
         const shown = items.slice(0, 80)
-        const header = args.query ? `匹配「${args.query}」${items.length} 条` : `共 ${items.length} 条`
+        const header = args.query
+          ? `匹配「${args.query}」${items.length} 条 / ${items.length} matched for "${args.query}"`
+          : `共 ${items.length} 条 / ${items.length} entries`
         const rows = shown.map((item, index) => {
           const bits = [item.title, KIND_LABEL[item.kind] || item.kind]
-          if (item.account) bits.push(`账号 ${item.account}`)
-          bits.push(item.has_secret ? `有密钥 ${item.secret_length} 位` : '无密钥')
+          if (item.account) bits.push(`账号/Account ${item.account}`)
+          bits.push(item.has_secret ? `密钥/secret ${item.secret_length}` : '无密钥 / no secret')
           bits.push(`${formatTime(item.updated_at)}`)
           bits.push(`id ${item.id}`)
           return `${index + 1}. ${bits.join(' · ')}`
         })
-        const summary = [header, ...rows, items.length > shown.length ? `（只显示前 ${shown.length} 条，用 query 缩小范围）` : '', total && !items.length ? '密码本还是空的。' : '']
+        const summary = [
+          header,
+          ...rows,
+          items.length > shown.length
+            ? `（只显示前 ${shown.length} 条，用 query 缩小范围）/ showing the first ${shown.length}; narrow it with query`
+            : '',
+          total === 0 ? '密码本还是空的 / The vault is empty' : '',
+        ]
           .filter(Boolean)
           .join('\n')
         return { total, shown: shown.length, summary }
@@ -365,7 +397,9 @@ function buildTools(store) {
         }
         if (!args.query) throw new Error('需要 id 或 query')
         const { items } = await dispatch(store, 'list', { query: args.query })
-        if (!items.length) return { found: false, text: `没有匹配「${args.query}」的条目。`, reveal }
+        if (!items.length) {
+          return { found: false, text: `没有匹配「${args.query}」的条目 / no entry matches "${args.query}"`, reveal }
+        }
         if (items.length === 1) {
           const entry = await dispatch(store, 'get', { id: items[0].id, reveal })
           return { found: true, text: entryText(entry, { revealed: reveal }), reveal }
@@ -373,7 +407,7 @@ function buildTools(store) {
         const rows = items.slice(0, 10).map((item, index) => `${index + 1}. ${item.title} · ${item.id}`)
         return {
           found: false,
-          text: `「${args.query}」命中 ${items.length} 条，选一个 id 再取：\n${rows.join('\n')}`,
+          text: `「${args.query}」命中 ${items.length} 条，选一个 id 再取 / ${items.length} matches, pick one id:\n${rows.join('\n')}`,
           reveal,
         }
       },
@@ -389,7 +423,7 @@ function buildTools(store) {
           required: ['id', 'total'],
           properties: { id: { type: 'string' }, total: { type: 'integer' } },
         },
-        render: (_args, value) => text(`已删除 ${value.id}，密码本还剩 ${value.total} 条。`),
+        render: (_args, value) => text(`已删除 / Deleted：${value.id} · 还剩 ${value.total} 条 / ${value.total} left`),
       },
       async execute(rawArgs) {
         const args = checkArgs(rawArgs, DELETE_PARAMS)
