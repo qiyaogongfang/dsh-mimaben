@@ -1,7 +1,7 @@
 {
   "name": "dsh-mimaben",
   "version": "1.0.0",
-  "description": "密码本：DSH 左侧栏的本机加密密码本，记录账号密码、API Key、密钥和文档，也能在对话里按需取用。",
+  "description": "本机加密密码本：记录账号密码、API Key、密钥和文档，可在对话里按需取用。 / Encrypted local-first credential vault for DSH.",
   "type": "module",
   "license": "MIT",
   "author": "qiyaogongfang <357743028+qiyaogongfang@users.noreply.github.com>",
@@ -41,6 +41,7 @@
     "locale/*.json",
     "icon.svg",
     "README.md",
+    "README.en.md",
     "LICENSE"
   ],
   "dsh": {

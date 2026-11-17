@@ -15,11 +15,14 @@ const MAX_BODY = 512 * 1024
 export const name = 'mimaben'
 export const inject = ['webServer', 'tools']
 
-const PROMPT = `# 密码本
-用户有一个本机加密的密码本（mimaben），保存账号密码、API Key、密钥和文档。
-- 用户说「记一下」「存起来」并给出账号、密码、Key 或文档时，调用 mimaben_save 写入，别写进别的文件。
-- 用户要某个账号、Key 或文档时，先用 mimaben_list 找到条目，再用 mimaben_get 取。
-- 只有用户明确要密钥原值时才把 reveal 设为 true；回复里只给出他要的那一项，不要顺手罗列其它密钥。`
+const PROMPT = `# 密码本 / Vault
+用户有一个本机加密的密码本（mimaben），用 mimaben_* 工具读写。用户说「记一下」「存起来」并给出
+账号、密码、Key 或文档时写入 mimaben_save，别写进别的文件；要某项时先用 mimaben_list 找到条目，
+再用 mimaben_get 取；只有用户明确要密钥原值时才把 reveal 设为 true，回复里只给出他要的那一项。
+The user keeps credentials in a local encrypted vault (mimaben). When the user asks to remember an
+account, password, key or document, call mimaben_save instead of writing another file. To fetch one,
+locate it with mimaben_list, then read it with mimaben_get. Set reveal only when the user explicitly
+asks for the secret value itself, and return only that one item — never dump the other credentials.`
 
 function statusError(status, message) {
   return Object.assign(new Error(message), { status })
@@ -231,7 +234,7 @@ function buildTools(store) {
     {
       name: 'mimaben_save',
       description:
-        '把账号、密码、API Key、密钥或文档存进本机加密密码本（侧栏「密码本」可以看）。不传 id 是新建；带 id 就是修改——只覆盖你给出的字段，没给的保持不变。只改一两个字段时优先用 mimaben_update。',
+        '把账号、密码、API Key、密钥或文档存进本机加密密码本。不传 id 是新建；带 id 只覆盖给出的字段。 / Save an account, password, API key or document into the local encrypted vault. Omit id to create; with id only the given fields are written.',
       parameters: SAVE_PARAMS,
       output: {
         schema: {
@@ -270,7 +273,7 @@ function buildTools(store) {
     {
       name: 'mimaben_update',
       description:
-        '改一条已有记录：只传要改的字段，其余一律保持不变；要把某个字段清空就传 null 或把字段名放进 clear。改完会记一条修改记录（只记改了哪些字段，不存旧值）。',
+        '改一条已有记录：只覆盖给出的字段，其余保持不变；清空某字段就传 null 或把字段名放进 clear。 / Update an existing entry: only the given fields change; pass null or list the field in clear to empty it.',
       parameters: UPDATE_PARAMS,
       output: {
         schema: {
@@ -301,7 +304,7 @@ function buildTools(store) {
     },
     {
       name: 'mimaben_list',
-      description: '列出密码本里的条目（不含密钥正文），可按关键词和类型筛选。返回结果里带 id，供 mimaben_get 使用。',
+      description: '列出条目（不含密钥正文），可按关键词和类型筛选，返回 id 供 mimaben_get 使用。 / List entries without secret bodies, filtered by query and kind; the ids feed mimaben_get.',
       parameters: LIST_PARAMS,
       output: {
         schema: {
@@ -338,7 +341,7 @@ function buildTools(store) {
     {
       name: 'mimaben_get',
       description:
-        '取一条条目的详情。默认隐藏密钥正文；只有用户明确要密码或 Key 原值时，才把 reveal 传 "true"（原值会进入对话记录）。',
+        '取一条详情。默认隐藏密钥正文；只有用户明确要原值时 reveal 才传 "true"（原值会进入对话记录）。 / Read one entry. Secrets stay hidden unless reveal is "true", which puts the value into the transcript.',
       parameters: GET_PARAMS,
       output: {
         schema: {
@@ -377,7 +380,7 @@ function buildTools(store) {
     },
     {
       name: 'mimaben_delete',
-      description: '从密码本删除一条记录。删除前先跟用户确认是哪一条。',
+      description: '删除一条记录，删前先跟用户确认是哪一条。 / Delete one entry. Confirm which one with the user first.',
       parameters: DELETE_PARAMS,
       output: {
         schema: {
