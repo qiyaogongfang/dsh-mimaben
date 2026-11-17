@@ -21,7 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          # 不设 registry-url：它会在 .npmrc 里写一个空的 _authToken 占位，
+          # 让 npm 以为已经有凭据，反而不去走 OIDC。registry 改用环境变量传。
 
       - name: 校验版本 / check version
         run: |
@@ -37,4 +38,6 @@ jobs:
           "
 
       - name: 发布 / publish
-        run: npm publish --provenance --access public --registry https://registry.npmjs.org
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+        run: npm publish --provenance --access public
