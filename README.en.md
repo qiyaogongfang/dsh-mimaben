@@ -23,7 +23,15 @@ from a conversation.
 
 ## Install
 
-### Option 1: local directory (available now)
+### Option 1: straight from GitHub (recommended, one line)
+
+```
+plugin_manager → install_bundle → target: github:qiyaogongfang/dsh-mimaben
+```
+
+No clone and no npm account required.
+
+### Option 2: local directory (when you want to change the code)
 
 ```powershell
 git clone https://github.com/qiyaogongfang/dsh-mimaben.git
@@ -32,9 +40,9 @@ git clone https://github.com/qiyaogongfang/dsh-mimaben.git
 Install that directory from the DSH plugin manager, or ask the agent to run `plugin_manager` with
 `install_bundle` and the absolute path of the clone as `target`.
 
-### Option 2: npm (once published)
+### Option 3: npm
 
-Install `dsh-mimaben` from the plugin manager, or run `install_bundle` with `dsh-mimaben` as `target`.
+Not published to npm yet; use one of the options above.
 
 ### Verify
 
