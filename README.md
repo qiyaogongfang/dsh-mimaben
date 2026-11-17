@@ -19,15 +19,23 @@ DSH 左侧栏里的本机加密密码本。记录账号密码、API Key、密钥
 
 ## 安装
 
-### 方式一：直接从 GitHub 安装（推荐，一行）
+### 方式一：npm（推荐）
+
+```
+plugin_manager → install_bundle → target: dsh-mimaben
+```
+
+国内会走 npmmirror 镜像；要钉版本就写 `dsh-mimaben@1.0.0`。
+
+### 方式二：直接从 GitHub 安装
 
 ```
 plugin_manager → install_bundle → target: github:qiyaogongfang/dsh-mimaben
 ```
 
-不需要 clone，也不需要 npm 账号。
+不需要 npm 账号，取仓库默认分支。
 
-### 方式二：本地目录（要改代码时）
+### 方式三：本地目录（要改代码时）
 
 ```powershell
 git clone https://github.com/qiyaogongfang/dsh-mimaben.git
@@ -35,10 +43,6 @@ git clone https://github.com/qiyaogongfang/dsh-mimaben.git
 
 在 DSH 的插件管理中安装该目录；也可以让 agent 执行 `plugin_manager` 的 `install_bundle`，
 target 填克隆目录的绝对路径。
-
-### 方式三：npm
-
-暂未发布到 npm，请使用上面两种方式。
 
 ### 验证安装
 
