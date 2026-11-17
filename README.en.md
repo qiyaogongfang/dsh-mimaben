@@ -151,6 +151,22 @@ accumulate inside the file.
 - After changing the Host side, no DSH restart is needed: disable and re-enable the plugin to reload the
   module. Changes to `client.js` only need a page refresh.
 
+## Releasing
+
+npm publishing uses **trusted publishing (OIDC)**: no token is stored in the repository or the CI.
+The first release still happens locally — `npm publish --registry https://registry.npmjs.org` with one
+2FA code — because a trusted publisher can only be registered on a package that already exists.
+
+1. Publish once locally.
+2. Open https://www.npmjs.com/package/dsh-mimaben/access → **Trusted publishing** and register
+   `qiyaogongfang` / `dsh-mimaben` / `publish.yml`.
+3. Uncomment the `push: tags` trigger in `.github/workflows/publish.yml` and push it — the workflow is
+   manual-dispatch on purpose until OIDC actually works.
+
+After that, a release is: bump the `package.json` version → commit → `git tag v1.0.1` →
+`git push origin main --tags`. The CI checks that the tag matches the version and publishes with
+provenance.
+
 ## License
 
 MIT © qiyaogongfang

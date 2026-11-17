@@ -134,21 +134,25 @@ target 填克隆目录的绝对路径。
 
 ## 发布
 
-npm 侧用 **trusted publishing（OIDC）**，仓库和 CI 里都不存 token：
+npm 侧用 **trusted publishing（OIDC）**，仓库和 CI 里都不存 token，发版时也不需要输 2FA 码。
 
-1. 改 `package.json` 的 `version`，提交并推送。
-2. 打 tag 并推送：
+但首发之前配不了 OIDC（trusted publisher 只能登记在已存在的包上），所以现在的流程是：
 
-   ```powershell
-   git tag v1.0.1
-   git push origin main --tags
-   ```
+1. **首次发布**在本地做一次：`npm publish --registry https://registry.npmjs.org`（需 2FA 码）。
+2. 发布成功后到 https://www.npmjs.com/package/dsh-mimaben/access → **Trusted publishing** 登记
+   `qiyaogongfang` / `dsh-mimaben` / `publish.yml`。
+3. 把 `.github/workflows/publish.yml` 里 `push: tags` 那段的注释取消并推送——workflow 现在是**手动触发**，
+   免得 OIDC 还没配好时推 tag 白跑一次失败。
 
-3. `.github/workflows/publish.yml` 在 tag 上触发：先校验 tag 与 `package.json` 版本一致，再用 OIDC 发布到 npm，自动生成 provenance。
+之后每次发版：改 `package.json` 的 `version` → 提交 → `git tag v1.0.1` → `git push origin main --tags`，
+CI 先校验 tag 与版本一致，再用 OIDC 发布并生成 provenance。
 
-首次使用前要在 npmjs.com 的包页面（Package → Settings → **Trusted publishing**）登记一次仓库 `qiyaogongfang/dsh-mimaben` 与 workflow 文件名 `publish.yml`——只有这一步需要 2FA。之后每次发版只推 tag。
-
-Publishing uses npm **trusted publishing (OIDC)**: no token is stored in the repository or the CI. Bump the version, push a `v*` tag, and the workflow publishes with provenance after checking that the tag matches `package.json`. Register this repository and `publish.yml` once under the package's Trusted publishing settings — the only step that needs 2FA.
+Publishing uses npm **trusted publishing (OIDC)**: no token is stored in the repository or the CI. The
+first release still has to happen locally (`npm publish`, one 2FA code), because a trusted publisher can
+only be registered on a package that already exists. After that: register this repository and
+`publish.yml` under the package's Trusted publishing settings, uncomment the tag trigger in
+`.github/workflows/publish.yml` (it is manual-dispatch on purpose until OIDC works), and every later
+release is a `v*` tag push.
 
 ## 许可
 

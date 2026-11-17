@@ -1,13 +1,14 @@
 name: publish
 
-# 打 tag（v1.0.1 这类）时自动发布到 npm。
-# 用 npm trusted publishing（OIDC），仓库里不存任何 token，也不需要 2FA 验证码。
-# 前提：已在 npmjs.com 的包设置里把本仓库和 publish.yml 登记为 trusted publisher。
-
+# 发布到 npm：用 trusted publishing（OIDC），仓库里不存任何 token。
+#
+# 现在只能手动触发：trusted publisher 要等包**首次发布成功**之后才能在包页面上登记，
+# 登记完成后再把下面的 tag 触发取消注释，以后推 v* tag 就会自动发。
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+  # push:
+  #   tags:
+  #     - 'v*'
 
 permissions:
   contents: read
@@ -24,16 +25,17 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: 校验 tag 与 package.json 版本一致 / check tag matches package.json
+      - name: 校验版本 / check version
         run: |
           node -e "
             const pkg = require('./package.json');
-            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, '');
-            if (pkg.version !== tag) {
-              console.error('版本不一致 / version mismatch：package.json ' + pkg.version + ' ≠ tag ' + tag);
+            const ref = process.env.GITHUB_REF_NAME.replace(/^v/, '');
+            const tagLike = /^v\d/.test(process.env.GITHUB_REF_NAME);
+            if (tagLike && pkg.version !== ref) {
+              console.error('版本不一致 / version mismatch：package.json ' + pkg.version + ' ≠ tag ' + ref);
               process.exit(1);
             }
-            console.log('版本一致 / version ok: ' + tag);
+            console.log('准备发布 / publishing: ' + pkg.name + '@' + pkg.version);
           "
 
       - name: 发布 / publish
