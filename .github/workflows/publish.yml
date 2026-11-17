@@ -20,9 +20,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           # 不设 registry-url：它会在 .npmrc 里写一个空的 _authToken 占位，
           # 让 npm 以为已经有凭据，反而不去走 OIDC。registry 改用环境变量传。
+
+      - name: 确保 npm 支持 trusted publishing / ensure npm supports OIDC
+        run: |
+          npm install -g npm@latest
+          node --version
+          npm --version
 
       - name: 校验版本 / check version
         run: |
