@@ -1,14 +1,12 @@
 name: publish
 
 # 发布到 npm：用 trusted publishing（OIDC），仓库里不存任何 token。
-#
-# 现在只能手动触发：trusted publisher 要等包**首次发布成功**之后才能在包页面上登记，
-# 登记完成后再把下面的 tag 触发取消注释，以后推 v* tag 就会自动发。
+# 已登记 trusted publisher（qiyaogongfang / dsh-mimaben / publish.yml），推 v* tag 即发布。
 on:
   workflow_dispatch:
-  # push:
-  #   tags:
-  #     - 'v*'
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
