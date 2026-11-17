@@ -124,6 +124,24 @@ target 填克隆目录的绝对路径。
 - 修改 Host 侧代码后无需重启 DSH：在插件管理中关闭再启用该插件即可重新加载；仅修改
   `client.js` 时刷新页面即可。
 
+## 发布
+
+npm 侧用 **trusted publishing（OIDC）**，仓库和 CI 里都不存 token：
+
+1. 改 `package.json` 的 `version`，提交并推送。
+2. 打 tag 并推送：
+
+   ```powershell
+   git tag v1.0.1
+   git push origin main --tags
+   ```
+
+3. `.github/workflows/publish.yml` 在 tag 上触发：先校验 tag 与 `package.json` 版本一致，再用 OIDC 发布到 npm，自动生成 provenance。
+
+首次使用前要在 npmjs.com 的包页面（Package → Settings → **Trusted publishing**）登记一次仓库 `qiyaogongfang/dsh-mimaben` 与 workflow 文件名 `publish.yml`——只有这一步需要 2FA。之后每次发版只推 tag。
+
+Publishing uses npm **trusted publishing (OIDC)**: no token is stored in the repository or the CI. Bump the version, push a `v*` tag, and the workflow publishes with provenance after checking that the tag matches `package.json`. Register this repository and `publish.yml` once under the package's Trusted publishing settings — the only step that needs 2FA.
+
 ## 许可
 
 MIT © qiyaogongfang
