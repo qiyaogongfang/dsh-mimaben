@@ -138,25 +138,30 @@ target 填克隆目录的绝对路径。
 
 ## 发布
 
-npm 侧用 **trusted publishing（OIDC）**，仓库和 CI 里都不存 token，发版时也不需要输 2FA 码。
+npm 侧用 **trusted publishing（OIDC）**：仓库和 CI 里都不存 token，发版也不需要 2FA 码。
 
-但首发之前配不了 OIDC（trusted publisher 只能登记在已存在的包上），所以现在的流程是：
+每个版本的流程：
 
-1. **首次发布**在本地做一次：`npm publish --registry https://registry.npmjs.org`（需 2FA 码）。
-2. 发布成功后到 https://www.npmjs.com/package/dsh-mimaben/access → **Trusted publishing** 登记
-   `qiyaogongfang` / `dsh-mimaben` / `publish.yml`。
-3. 把 `.github/workflows/publish.yml` 里 `push: tags` 那段的注释取消并推送——workflow 现在是**手动触发**，
-   免得 OIDC 还没配好时推 tag 白跑一次失败。
+1. 改 `package.json` 的 `version`，提交并推送。
+2. 打 tag 并推送：
 
-之后每次发版：改 `package.json` 的 `version` → 提交 → `git tag v1.0.1` → `git push origin main --tags`，
-CI 先校验 tag 与版本一致，再用 OIDC 发布并生成 provenance。
+   ```powershell
+   git tag v1.0.4
+   git push origin main --tags
+   ```
 
-Publishing uses npm **trusted publishing (OIDC)**: no token is stored in the repository or the CI. The
-first release still has to happen locally (`npm publish`, one 2FA code), because a trusted publisher can
-only be registered on a package that already exists. After that: register this repository and
-`publish.yml` under the package's Trusted publishing settings, uncomment the tag trigger in
-`.github/workflows/publish.yml` (it is manual-dispatch on purpose until OIDC works), and every later
-release is a `v*` tag push.
+3. `.github/workflows/publish.yml` 在 tag 上触发：校验 tag 与版本一致 → 用 OIDC 发布 → 自动生成
+   provenance（npm 页面会显示"由 qiyaogongfang/dsh-mimaben 的 publish.yml 构建"）。
+
+前提：包页面 Settings → **Trusted publishing** 已登记 `qiyaogongfang` / `dsh-mimaben` / `publish.yml`，
+且 **Allowed actions 勾了 Publish**；CI 里必须用 **Node 24 + npm ≥ 11.5**——旧版 npm 不支持 OIDC 发布，
+会报 `ENEEDAUTH`。
+
+Publishing uses npm **trusted publishing (OIDC)**: no token is stored in the repository or the CI, and a
+release needs no 2FA code. Bump the version, push a `v*` tag, and the workflow publishes with provenance
+after checking that the tag matches `package.json`. Prerequisites: this repository and `publish.yml` are
+registered under the package's Trusted publishing settings with **Publish** checked in Allowed actions,
+and CI runs **Node 24 + npm ≥ 11.5** (older npm cannot do OIDC publishing and fails with `ENEEDAUTH`).
 
 ## 许可
 

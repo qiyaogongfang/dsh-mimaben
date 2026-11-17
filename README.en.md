@@ -157,19 +157,23 @@ accumulate inside the file.
 
 ## Releasing
 
-npm publishing uses **trusted publishing (OIDC)**: no token is stored in the repository or the CI.
-The first release still happens locally — `npm publish --registry https://registry.npmjs.org` with one
-2FA code — because a trusted publisher can only be registered on a package that already exists.
+npm publishing uses **trusted publishing (OIDC)**: no token is stored in the repository or the CI, and a
+release needs no 2FA code.
 
-1. Publish once locally.
-2. Open https://www.npmjs.com/package/dsh-mimaben/access → **Trusted publishing** and register
-   `qiyaogongfang` / `dsh-mimaben` / `publish.yml`.
-3. Uncomment the `push: tags` trigger in `.github/workflows/publish.yml` and push it — the workflow is
-   manual-dispatch on purpose until OIDC actually works.
+1. Bump the `version` in `package.json`, commit and push.
+2. Tag and push:
 
-After that, a release is: bump the `package.json` version → commit → `git tag v1.0.1` →
-`git push origin main --tags`. The CI checks that the tag matches the version and publishes with
-provenance.
+   ```powershell
+   git tag v1.0.4
+   git push origin main --tags
+   ```
+
+3. `.github/workflows/publish.yml` runs on the tag: it checks that the tag matches the version, publishes
+   through OIDC and attaches provenance (npm shows "built from qiyaogongfang/dsh-mimaben's publish.yml").
+
+Prerequisites: this repository and `publish.yml` are registered under the package's Trusted publishing
+settings with **Publish** checked in Allowed actions, and CI runs **Node 24 + npm ≥ 11.5** — older npm
+cannot do OIDC publishing and fails with `ENEEDAUTH`.
 
 ## License
 
