@@ -1,0 +1,59 @@
+{
+  "name": "dsh-mimaben",
+  "version": "1.0.0",
+  "description": "密码本：DSH 左侧栏的本机加密密码本，记录账号密码、API Key、密钥和文档，也能在对话里按需取用。",
+  "type": "module",
+  "license": "MIT",
+  "author": "qiyaogongfang <357743028+qiyaogongfang@users.noreply.github.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qiyaogongfang/dsh-mimaben.git"
+  },
+  "homepage": "https://github.com/qiyaogongfang/dsh-mimaben#readme",
+  "bugs": {
+    "url": "https://github.com/qiyaogongfang/dsh-mimaben/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "password-manager",
+    "vault",
+    "secrets",
+    "encryption"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "store.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

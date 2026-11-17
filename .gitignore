@@ -1,0 +1,23 @@
+# 依赖
+node_modules/
+*.tgz
+
+# 密码本数据（永远不进仓库）
+data/
+store.enc.json
+store-key.dpapi
+store-key.passphrase.json
+store.lock
+*.tmp
+
+# 本地与凭据
+.env
+.env.*
+.credentials.yaml
+*.pem
+*.key
+!icon.svg
+
+# 系统
+.DS_Store
+Thumbs.db

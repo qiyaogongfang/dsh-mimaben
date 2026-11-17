@@ -1,0 +1,5 @@
+# 密码本：侧栏入口 + 本机加密存储 + 五个工具。
+# 浏览器半边由 package.json 的 dsh.client 声明加载（client.js）。
+- insert:
+    - id: mimaben
+      name: 'dsh-mimaben'

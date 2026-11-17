@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Vault",
+    "description": "Record accounts, passwords, API keys and documents in a local encrypted vault, then fetch them from the sidebar or the chat."
+  }
+}

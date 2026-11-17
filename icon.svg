@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="密码本">
+  <rect width="64" height="64" rx="15" fill="#0F2A22"/>
+  <g fill="#EDF2EC">
+    <circle cx="32" cy="24" r="11"/>
+    <path d="M27.6 30.5h8.8L40 52H24z"/>
+  </g>
+  <g fill="#0F2A22">
+    <circle cx="32" cy="24" r="3.4"/>
+    <path d="M30.3 27.2h3.4l1 9.4h-5.4z"/>
+  </g>
+  <circle cx="50.5" cy="13.5" r="3.2" fill="#E8B45A"/>
+</svg>
