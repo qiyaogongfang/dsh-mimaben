@@ -33,16 +33,34 @@
 
 ## Install
 
-Search for **`dsh-mimaben`** in the DeepSeek Harness plugin manager, install, refresh the page, and a keyhole
-icon appears in the sidebar.
+**Option 1: npm (recommended)**
 
-Other sources:
+```bash
+npm install dsh-mimaben
+```
 
-| target | Purpose |
-| :-- | :-- |
-| `dsh-mimaben` | npm (recommended; China mirrors served from npmmirror) |
-| `github:qiyaogongfang/dsh-mimaben` | No npm account needed |
-| absolute path of a clone | When you want to change the code |
+Or search for `dsh-mimaben` in the DeepSeek Harness plugin manager; when the agent does it, the target is
+`dsh-mimaben`. Pin a version with `dsh-mimaben@1.0.6` if you like.
+
+**Option 2: git clone (when you want to change the code)**
+
+```bash
+git clone https://github.com/qiyaogongfang/dsh-mimaben.git
+```
+
+Then install the absolute path of the clone:
+
+```
+plugin_manager → install_bundle → target: /path/to/dsh-mimaben
+```
+
+**Option 3: no clone, straight from GitHub**
+
+```
+plugin_manager → install_bundle → target: github:qiyaogongfang/dsh-mimaben
+```
+
+Refresh the page afterwards; a keyhole icon appears in the sidebar.
 
 **First launch**: on Windows it just works (the key is protected by your Windows account, no passphrase).
 On macOS / Linux it asks for a passphrase that protects the key, and asks again on every later launch.

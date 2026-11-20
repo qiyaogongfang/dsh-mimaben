@@ -33,15 +33,34 @@
 
 ## 安装
 
-在 DeepSeek Harness 的插件里搜 **`dsh-mimaben`** 安装，刷新页面，左侧栏多一个钥匙孔图标。
+**方式一：npm（推荐）**
 
-也可以指定别的来源：
+```bash
+npm install dsh-mimaben
+```
 
-| target | 用途 |
-| :-- | :-- |
-| `dsh-mimaben` | npm（推荐，国内走 npmmirror 镜像） |
-| `github:qiyaogongfang/dsh-mimaben` | 不用 npm 账号 |
-| 克隆目录的绝对路径 | 想改代码 |
+或在 DeepSeek Harness 的插件里搜 `dsh-mimaben` 安装；让 agent 代劳时 target 填 `dsh-mimaben`。
+国内走 npmmirror 镜像，要钉版本就写 `dsh-mimaben@1.0.6`。
+
+**方式二：git clone（想改代码时）**
+
+```bash
+git clone https://github.com/qiyaogongfang/dsh-mimaben.git
+```
+
+然后把克隆目录的绝对路径作为 target 装进 DSH：
+
+```
+plugin_manager → install_bundle → target: /你的路径/dsh-mimaben
+```
+
+**方式三：不 clone，直接用 GitHub 源**
+
+```
+plugin_manager → install_bundle → target: github:qiyaogongfang/dsh-mimaben
+```
+
+装完刷新页面，左侧栏出现钥匙孔图标。
 
 **第一次打开**：Windows 直接可用（密钥由 Windows 账户保管，免输口令）；macOS / Linux 会让你设一个主口令，之后每次打开输入。
 
