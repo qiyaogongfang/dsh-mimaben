@@ -1,6 +1,6 @@
 {
   "name": "dsh-mimaben",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "本机加密密码本：记录账号密码、API Key、密钥和文档，可在对话里按需取用。 / Encrypted local-first credential vault for DSH.",
   "type": "module",
   "license": "MIT",

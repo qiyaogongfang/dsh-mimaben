@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/qiyaogongfang/dsh-mimaben@main/assets/banner.svg" alt="dsh-mimaben vault" width="100%" />
+  <img src="https://gcore.jsdelivr.net/gh/qiyaogongfang/dsh-mimaben@main/assets/banner.svg" alt="dsh-mimaben vault" width="100%" />
 </p>
 
 <h1 align="center">dsh-mimaben · Vault</h1>
